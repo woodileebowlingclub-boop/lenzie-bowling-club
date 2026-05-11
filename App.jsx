@@ -1,48 +1,76 @@
 import "./App.css";
 import logo from "./assets/lenzie_logo_small.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const ADMIN_PIN = "1234";
+const MEMBER_PIN = "2026";
+
+const sections = [
+  "Home",
+  "Diary",
+  "Notices",
+  "Competitions",
+  "Members",
+  "Office Bearers",
+  "Club Coaches",
+  "Documents",
+];
+
+const emptyForm = {
+  title: "",
+  date: "",
+  time: "",
+  place: "",
+  details: "",
+  fileName: "",
+  fileUrl: "",
+};
 
 export default function App() {
-  const ADMIN_PIN = "1234";
-  const MEMBER_PIN = "2026";
-
-  const tabs = [
-    "Home",
-    "Diary",
-    "Notices",
-    "Competitions",
-    "Members",
-    "Office Bearers",
-    "Club Coaches",
-    "Documents",
-  ];
-
   const [pin, setPin] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
+  const [form, setForm] = useState(emptyForm);
 
-  const [sectionText, setSectionText] = useState({
-    Home: "Welcome to Lenzie Bowling Club.",
-    Diary: "Upcoming events will appear here.",
-    Notices: "Latest club notices appear here.",
-    Competitions: "Competition information will appear here.",
-    Members: "Members information will appear here.",
-    "Office Bearers": "Club officials will appear here.",
-    "Club Coaches": "Coaching information will appear here.",
-    Documents: "Club documents will appear here.",
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem("lenzieAppItems");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          Home: [
+            {
+              title: "Welcome to Lenzie Bowling Club",
+              date: "",
+              time: "",
+              place: "Lenzie Bowling Club",
+              details: "Welcome to our new members app.",
+              fileName: "",
+              fileUrl: "",
+            },
+          ],
+          Diary: [],
+          Notices: [],
+          Competitions: [],
+          Members: [],
+          "Office Bearers": [],
+          "Club Coaches": [],
+          Documents: [],
+        };
   });
+
+  useEffect(() => {
+    localStorage.setItem("lenzieAppItems", JSON.stringify(items));
+  }, [items]);
 
   function login() {
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
       setIsAdmin(true);
-      setActiveTab("Home");
       setPin("");
     } else if (pin === MEMBER_PIN) {
       setLoggedIn(true);
       setIsAdmin(false);
-      setActiveTab("Home");
       setPin("");
     } else {
       alert("Incorrect PIN");
@@ -56,10 +84,34 @@ export default function App() {
     setActiveTab("Home");
   }
 
-  function updateSection(value) {
-    setSectionText({
-      ...sectionText,
-      [activeTab]: value,
+  function handleFile(file) {
+    if (!file) return;
+
+    setForm({
+      ...form,
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+    });
+  }
+
+  function addItem() {
+    if (!form.title.trim() && !form.details.trim()) {
+      alert("Add a title or details first.");
+      return;
+    }
+
+    setItems({
+      ...items,
+      [activeTab]: [...(items[activeTab] || []), form],
+    });
+
+    setForm(emptyForm);
+  }
+
+  function deleteItem(index) {
+    setItems({
+      ...items,
+      [activeTab]: items[activeTab].filter((_, i) => i !== index),
     });
   }
 
@@ -68,7 +120,6 @@ export default function App() {
       <div className="loginPage">
         <div className="loginBox">
           <img src={logo} alt="Lenzie Bowling Club" className="loginLogo" />
-
           <h1>Lenzie Bowling Club</h1>
           <p className="subtitle">Members App</p>
 
@@ -90,7 +141,6 @@ export default function App() {
       <header className="header">
         <div className="headerLeft">
           <img src={logo} alt="logo" className="headerLogo" />
-
           <div>
             <h1>Lenzie Bowling Club</h1>
             <p>{isAdmin ? "Administrator Mode" : "Members App"}</p>
@@ -103,13 +153,16 @@ export default function App() {
       </header>
 
       <nav className="navBar">
-        {tabs.map((tab) => (
+        {sections.map((section) => (
           <button
-            key={tab}
-            className={activeTab === tab ? "navButton active" : "navButton"}
-            onClick={() => setActiveTab(tab)}
+            key={section}
+            className={activeTab === section ? "navButton active" : "navButton"}
+            onClick={() => {
+              setActiveTab(section);
+              setForm(emptyForm);
+            }}
           >
-            {tab}
+            {section}
           </button>
         ))}
       </nav>
@@ -118,23 +171,94 @@ export default function App() {
         <div className="card">
           <h2>{activeTab}</h2>
 
-          {isAdmin ? (
-            <>
-              <textarea
-                value={sectionText[activeTab]}
-                onChange={(e) => updateSection(e.target.value)}
+          {isAdmin && (
+            <div className="adminForm">
+              <h3>Add to {activeTab}</h3>
+
+              <input
+                placeholder="Title / Name"
+                value={form.title}
+                onChange={(e) =>
+                  setForm({ ...form, title: e.target.value })
+                }
               />
 
-              <button
-                style={{ marginTop: "15px" }}
-                onClick={() => alert(`${activeTab} updated`)}
-              >
-                Save {activeTab}
-              </button>
-            </>
-          ) : (
-            <p>{sectionText[activeTab]}</p>
+              <input
+                placeholder="Date"
+                value={form.date}
+                onChange={(e) =>
+                  setForm({ ...form, date: e.target.value })
+                }
+              />
+
+              <input
+                placeholder="Time"
+                value={form.time}
+                onChange={(e) =>
+                  setForm({ ...form, time: e.target.value })
+                }
+              />
+
+              <input
+                placeholder="Place"
+                value={form.place}
+                onChange={(e) =>
+                  setForm({ ...form, place: e.target.value })
+                }
+              />
+
+              <textarea
+                placeholder="Details"
+                value={form.details}
+                onChange={(e) =>
+                  setForm({ ...form, details: e.target.value })
+                }
+              />
+
+              <input
+                type="file"
+                onChange={(e) => handleFile(e.target.files[0])}
+              />
+
+              {form.fileName && <p>Selected file: {form.fileName}</p>}
+
+              <button onClick={addItem}>Add to {activeTab}</button>
+            </div>
           )}
+
+          <div className="itemList">
+            {(items[activeTab] || []).length === 0 ? (
+              <p>No entries yet.</p>
+            ) : (
+              items[activeTab].map((item, index) => (
+                <div className="itemBox" key={index}>
+                  <h3>{item.title}</h3>
+
+                  {item.date && <p><strong>Date:</strong> {item.date}</p>}
+                  {item.time && <p><strong>Time:</strong> {item.time}</p>}
+                  {item.place && <p><strong>Place:</strong> {item.place}</p>}
+                  {item.details && <p>{item.details}</p>}
+
+                  {item.fileUrl && (
+                    <p>
+                      <a href={item.fileUrl} target="_blank" rel="noreferrer">
+                        Open file: {item.fileName}
+                      </a>
+                    </p>
+                  )}
+
+                  {isAdmin && (
+                    <button
+                      className="deleteBtn"
+                      onClick={() => deleteItem(index)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </main>
     </div>
