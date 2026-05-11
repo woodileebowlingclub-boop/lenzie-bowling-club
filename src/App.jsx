@@ -2,7 +2,7 @@ import "./App.css";
 import logo from "./assets/lenzie_logo_small.png";
 import { useEffect, useState } from "react";
 
-const ADMIN_PIN = "1873";
+const DEFAULT_ADMIN_PIN = "1234";
 
 const emptyData = {
   diary: [],
@@ -15,14 +15,19 @@ const emptyData = {
 };
 
 export default function App() {
+  const [adminPin, setAdminPin] = useState(DEFAULT_ADMIN_PIN);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pin, setPin] = useState("");
+  const [newPin, setNewPin] = useState("");
   const [activeTab, setActiveTab] = useState("Home");
   const [data, setData] = useState(emptyData);
 
   useEffect(() => {
-    const saved = localStorage.getItem("lenzieClubData");
-    if (saved) setData(JSON.parse(saved));
+    const savedData = localStorage.getItem("lenzieClubData");
+    const savedPin = localStorage.getItem("lenzieAdminPin");
+
+    if (savedData) setData(JSON.parse(savedData));
+    if (savedPin) setAdminPin(savedPin);
   }, []);
 
   useEffect(() => {
@@ -31,12 +36,27 @@ export default function App() {
 
   function login(e) {
     e.preventDefault();
-    if (pin === ADMIN_PIN) {
+
+    if (pin === adminPin) {
       setIsAdmin(true);
       setPin("");
     } else {
       alert("Wrong PIN");
     }
+  }
+
+  function changePin(e) {
+    e.preventDefault();
+
+    if (newPin.trim().length < 4) {
+      alert("PIN must be at least 4 numbers.");
+      return;
+    }
+
+    setAdminPin(newPin.trim());
+    localStorage.setItem("lenzieAdminPin", newPin.trim());
+    setNewPin("");
+    alert("Admin PIN changed.");
   }
 
   function addItem(section, item) {
@@ -68,10 +88,22 @@ export default function App() {
               value={pin}
               onChange={(e) => setPin(e.target.value)}
             />
-            <button>Admin Login</button>
+            <button type="submit">Admin Login</button>
           </form>
         ) : (
-          <button onClick={() => setIsAdmin(false)}>Logout Admin</button>
+          <>
+            <button onClick={() => setIsAdmin(false)}>Logout Admin</button>
+
+            <form onSubmit={changePin} className="pin-change-box">
+              <input
+                type="password"
+                placeholder="New admin PIN"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value)}
+              />
+              <button type="submit">Change Admin PIN</button>
+            </form>
+          </>
         )}
       </section>
 
@@ -230,7 +262,7 @@ function Section({ title, section, items, isAdmin, addItem, deleteItem }) {
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
           />
-          <button>Add</button>
+          <button type="submit">Add</button>
         </form>
       )}
 
@@ -305,7 +337,7 @@ function Contacts({ title, section, items, isAdmin, addItem, deleteItem }) {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
-          <button>Add</button>
+          <button type="submit">Add</button>
         </form>
       )}
 
@@ -316,7 +348,13 @@ function Contacts({ title, section, items, isAdmin, addItem, deleteItem }) {
           <h3>{item.name}</h3>
           {item.role && <p>{item.role}</p>}
           {item.phone && <p><a href={`tel:${item.phone}`}>Call</a></p>}
-          {item.whatsapp && <p><a href={whatsappLink(item.whatsapp)} target="_blank">WhatsApp</a></p>}
+          {item.whatsapp && (
+            <p>
+              <a href={whatsappLink(item.whatsapp)} target="_blank" rel="noreferrer">
+                WhatsApp
+              </a>
+            </p>
+          )}
           {item.email && <p><a href={`mailto:${item.email}`}>Email</a></p>}
           {isAdmin && (
             <button onClick={() => deleteItem(section, item.id)}>Delete</button>
@@ -362,7 +400,7 @@ function Documents({ items, isAdmin, addItem, deleteItem }) {
             value={form.link}
             onChange={(e) => setForm({ ...form, link: e.target.value })}
           />
-          <button>Add Document</button>
+          <button type="submit">Add Document</button>
         </form>
       )}
 
@@ -374,7 +412,9 @@ function Documents({ items, isAdmin, addItem, deleteItem }) {
           {item.category && <p><strong>Category:</strong> {item.category}</p>}
           {item.link && (
             <p>
-              <a href={item.link} target="_blank">Open Document</a>
+              <a href={item.link} target="_blank" rel="noreferrer">
+                Open Document
+              </a>
             </p>
           )}
           {isAdmin && (
