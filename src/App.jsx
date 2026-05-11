@@ -1,28 +1,36 @@
 import "./App.css";
 import logo from "./assets/lenzie_logo_small.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const ADMIN_PIN = "1234";
+
+const emptyData = {
+  diary: [],
+  notices: [],
+  competitions: [],
+  members: [],
+  officeBearers: [],
+  coaches: [],
+  documents: [],
+};
 
 export default function App() {
-  const ADMIN_PIN = "1234";
-
   const [isAdmin, setIsAdmin] = useState(false);
   const [pin, setPin] = useState("");
   const [activeTab, setActiveTab] = useState("Home");
+  const [data, setData] = useState(emptyData);
 
-  const tabs = [
-    "Home",
-    "Diary",
-    "Notices",
-    "Competitions",
-    "Members",
-    "Office Bearers",
-    "Club Coaches",
-    "Documents",
-  ];
+  useEffect(() => {
+    const saved = localStorage.getItem("lenzieClubData");
+    if (saved) setData(JSON.parse(saved));
+  }, []);
 
-  function handleLogin(e) {
+  useEffect(() => {
+    localStorage.setItem("lenzieClubData", JSON.stringify(data));
+  }, [data]);
+
+  function login(e) {
     e.preventDefault();
-
     if (pin === ADMIN_PIN) {
       setIsAdmin(true);
       setPin("");
@@ -31,25 +39,36 @@ export default function App() {
     }
   }
 
+  function addItem(section, item) {
+    const newItem = { id: Date.now(), ...item };
+    setData({ ...data, [section]: [...data[section], newItem] });
+  }
+
+  function deleteItem(section, id) {
+    setData({
+      ...data,
+      [section]: data[section].filter((item) => item.id !== id),
+    });
+  }
+
   return (
     <div className="app">
       <header className="club-header">
         <img src={logo} alt="Lenzie Bowling Club" className="club-logo" />
-
         <h1>Lenzie Bowling Club</h1>
         <p>Members diary, notices, competitions and club information</p>
       </header>
 
       <section className="admin-box">
         {!isAdmin ? (
-          <form onSubmit={handleLogin}>
+          <form onSubmit={login}>
             <input
               type="password"
               placeholder="Admin PIN"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
             />
-            <button type="submit">Admin Login</button>
+            <button>Admin Login</button>
           </form>
         ) : (
           <button onClick={() => setIsAdmin(false)}>Logout Admin</button>
@@ -57,7 +76,16 @@ export default function App() {
       </section>
 
       <nav className="tabs">
-        {tabs.map((tab) => (
+        {[
+          "Home",
+          "Diary",
+          "Notices",
+          "Competitions",
+          "Members",
+          "Office Bearers",
+          "Club Coaches",
+          "Documents",
+        ].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -69,99 +97,293 @@ export default function App() {
       </nav>
 
       <main className="content-card">
-        <h2>{activeTab}</h2>
-
         {activeTab === "Home" && (
-          <p>Welcome to the Lenzie Bowling Club members app.</p>
+          <>
+            <h2>Welcome</h2>
+            <p>Welcome to the Lenzie Bowling Club members app.</p>
+          </>
         )}
 
         {activeTab === "Diary" && (
-          <>
-            <p>Club diary events will appear here.</p>
-            {isAdmin && <SectionForm section="Diary Event" />}
-          </>
+          <Section
+            title="Diary"
+            section="diary"
+            items={data.diary}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Notices" && (
-          <>
-            <p>Club notices will appear here.</p>
-            {isAdmin && <SectionForm section="Notice" />}
-          </>
+          <Section
+            title="Notices"
+            section="notices"
+            items={data.notices}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Competitions" && (
-          <>
-            <p>Competition information will appear here.</p>
-            {isAdmin && <SectionForm section="Competition" />}
-          </>
+          <Section
+            title="Competitions"
+            section="competitions"
+            items={data.competitions}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Members" && (
-          <>
-            <p>Member contact details will appear here.</p>
-            {isAdmin && <ContactForm section="Member" />}
-          </>
+          <Contacts
+            title="Members"
+            section="members"
+            items={data.members}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Office Bearers" && (
-          <>
-            <p>Office Bearer details will appear here.</p>
-            {isAdmin && <ContactForm section="Office Bearer" />}
-          </>
+          <Contacts
+            title="Office Bearers"
+            section="officeBearers"
+            items={data.officeBearers}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Club Coaches" && (
-          <>
-            <p>Club Coach details will appear here.</p>
-            {isAdmin && <ContactForm section="Club Coach" />}
-          </>
+          <Contacts
+            title="Club Coaches"
+            section="coaches"
+            items={data.coaches}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
 
         {activeTab === "Documents" && (
-          <>
-            <p>Club documents will appear here.</p>
-            {isAdmin && <DocumentForm />}
-          </>
+          <Documents
+            items={data.documents}
+            isAdmin={isAdmin}
+            addItem={addItem}
+            deleteItem={deleteItem}
+          />
         )}
       </main>
     </div>
   );
 }
 
-function SectionForm({ section }) {
+function Section({ title, section, items, isAdmin, addItem, deleteItem }) {
+  const [form, setForm] = useState({
+    title: "",
+    date: "",
+    time: "",
+    place: "",
+    notes: "",
+  });
+
+  function submit(e) {
+    e.preventDefault();
+    addItem(section, form);
+    setForm({ title: "", date: "", time: "", place: "", notes: "" });
+  }
+
   return (
-    <div className="form-box">
-      <input placeholder={`${section} title`} />
-      <input type="date" />
-      <input type="time" />
-      <input placeholder="Place / venue" />
-      <textarea placeholder="Notes / details"></textarea>
-      <input type="file" />
-      <button>Add {section}</button>
-    </div>
+    <>
+      <h2>{title}</h2>
+
+      {isAdmin && (
+        <form className="form-box" onSubmit={submit}>
+          <input
+            placeholder="Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            required
+          />
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
+          <input
+            type="time"
+            value={form.time}
+            onChange={(e) => setForm({ ...form, time: e.target.value })}
+          />
+          <input
+            placeholder="Place"
+            value={form.place}
+            onChange={(e) => setForm({ ...form, place: e.target.value })}
+          />
+          <textarea
+            placeholder="Notes"
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          />
+          <button>Add</button>
+        </form>
+      )}
+
+      {items.length === 0 && <p>No items added yet.</p>}
+
+      {items.map((item) => (
+        <div className="item-card" key={item.id}>
+          <h3>{item.title}</h3>
+          {item.date && <p><strong>Date:</strong> {item.date}</p>}
+          {item.time && <p><strong>Time:</strong> {item.time}</p>}
+          {item.place && <p><strong>Place:</strong> {item.place}</p>}
+          {item.notes && <p>{item.notes}</p>}
+          {isAdmin && (
+            <button onClick={() => deleteItem(section, item.id)}>Delete</button>
+          )}
+        </div>
+      ))}
+    </>
   );
 }
 
-function ContactForm({ section }) {
+function Contacts({ title, section, items, isAdmin, addItem, deleteItem }) {
+  const [form, setForm] = useState({
+    name: "",
+    role: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+  });
+
+  function submit(e) {
+    e.preventDefault();
+    addItem(section, form);
+    setForm({ name: "", role: "", phone: "", whatsapp: "", email: "" });
+  }
+
+  function whatsappLink(number) {
+    let cleaned = number.replace(/\D/g, "");
+    if (cleaned.startsWith("0")) cleaned = "44" + cleaned.slice(1);
+    return `https://wa.me/${cleaned}`;
+  }
+
   return (
-    <div className="form-box">
-      <input placeholder={`${section} name`} />
-      <input placeholder="Phone number" />
-      <input placeholder="WhatsApp number" />
-      <input placeholder="Email address" />
-      <textarea placeholder="Notes / role / details"></textarea>
-      <button>Add {section}</button>
-    </div>
+    <>
+      <h2>{title}</h2>
+
+      {isAdmin && (
+        <form className="form-box" onSubmit={submit}>
+          <input
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
+          <input
+            placeholder="Role / details"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          />
+          <input
+            placeholder="Phone number"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <input
+            placeholder="WhatsApp number"
+            value={form.whatsapp}
+            onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+          />
+          <input
+            placeholder="Email address"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <button>Add</button>
+        </form>
+      )}
+
+      {items.length === 0 && <p>No contacts added yet.</p>}
+
+      {items.map((item) => (
+        <div className="item-card" key={item.id}>
+          <h3>{item.name}</h3>
+          {item.role && <p>{item.role}</p>}
+          {item.phone && <p><a href={`tel:${item.phone}`}>Call</a></p>}
+          {item.whatsapp && <p><a href={whatsappLink(item.whatsapp)} target="_blank">WhatsApp</a></p>}
+          {item.email && <p><a href={`mailto:${item.email}`}>Email</a></p>}
+          {isAdmin && (
+            <button onClick={() => deleteItem(section, item.id)}>Delete</button>
+          )}
+        </div>
+      ))}
+    </>
   );
 }
 
-function DocumentForm() {
+function Documents({ items, isAdmin, addItem, deleteItem }) {
+  const [form, setForm] = useState({
+    title: "",
+    category: "",
+    link: "",
+  });
+
+  function submit(e) {
+    e.preventDefault();
+    addItem("documents", form);
+    setForm({ title: "", category: "", link: "" });
+  }
+
   return (
-    <div className="form-box">
-      <input placeholder="Document title" />
-      <input placeholder="Category" />
-      <input type="file" />
-      <button>Add Document</button>
-    </div>
+    <>
+      <h2>Documents</h2>
+
+      {isAdmin && (
+        <form className="form-box" onSubmit={submit}>
+          <input
+            placeholder="Document title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            required
+          />
+          <input
+            placeholder="Category"
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          />
+          <input
+            placeholder="Document link / URL"
+            value={form.link}
+            onChange={(e) => setForm({ ...form, link: e.target.value })}
+          />
+          <button>Add Document</button>
+        </form>
+      )}
+
+      {items.length === 0 && <p>No documents added yet.</p>}
+
+      {items.map((item) => (
+        <div className="item-card" key={item.id}>
+          <h3>{item.title}</h3>
+          {item.category && <p><strong>Category:</strong> {item.category}</p>}
+          {item.link && (
+            <p>
+              <a href={item.link} target="_blank">Open Document</a>
+            </p>
+          )}
+          {isAdmin && (
+            <button onClick={() => deleteItem("documents", item.id)}>
+              Delete
+            </button>
+          )}
+        </div>
+      ))}
+    </>
   );
 }
