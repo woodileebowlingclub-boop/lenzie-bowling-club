@@ -2,7 +2,7 @@ import "./App.css";
 import logo from "./assets/lenzie_logo_small.png";
 import { useEffect, useState } from "react";
 
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "1873";
 
 const emptyData = {
   diary: [],
