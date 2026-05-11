@@ -9,37 +9,46 @@ body {
   color: #0f172a;
 }
 
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .loginPage {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef3f9;
+  background: linear-gradient(135deg, #eef3f9, #dbeafe);
 }
 
 .loginBox {
   width: 380px;
-  background: white;
-  padding: 35px;
-  border-radius: 20px;
+  background: #ffffff;
+  padding: 36px;
+  border-radius: 22px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 18px 45px rgba(18, 59, 122, 0.18);
 }
 
 .loginLogo {
-  width: 110px;
-  margin-bottom: 15px;
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+  margin-bottom: 14px;
 }
 
 .loginBox h1 {
   margin: 0;
   color: #123b7a;
-  font-size: 40px;
+  font-size: 34px;
+  line-height: 1.1;
 }
 
 .subtitle {
-  margin: 12px 0 25px;
-  font-size: 20px;
+  margin: 12px 0 24px;
+  font-size: 18px;
+  color: #475569;
 }
 
 input,
@@ -47,11 +56,11 @@ textarea {
   width: 100%;
   padding: 14px;
   margin-top: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #cbd5e1;
   font-size: 16px;
-  background: white;
-  color: #111827;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 textarea {
@@ -59,29 +68,35 @@ textarea {
   resize: vertical;
 }
 
+.loginBox button,
+.adminForm button {
+  width: 100%;
+}
+
 button {
   background: #123b7a;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 13px 20px;
   font-size: 16px;
-  cursor: pointer;
-  margin-top: 15px;
+  font-weight: bold;
+  margin-top: 14px;
 }
 
 button:hover {
-  background: #0d2f61;
+  background: #0b2d5e;
 }
 
 .app {
   min-height: 100vh;
+  background: #eef3f9;
 }
 
 .header {
-  background: #123b7a;
+  background: linear-gradient(135deg, #123b7a, #0b2d5e);
   color: white;
-  padding: 25px 40px;
+  padding: 28px 42px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,84 +105,95 @@ button:hover {
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .headerLogo {
-  width: 85px;
-  height: 85px;
+  width: 82px;
+  height: 82px;
   object-fit: contain;
   background: white;
   border-radius: 50%;
-  padding: 4px;
+  padding: 5px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
 }
 
 .header h1 {
   margin: 0;
-  font-size: 48px;
+  font-size: 44px;
+  line-height: 1;
 }
 
 .header p {
-  margin: 5px 0 0;
-  font-size: 22px;
+  margin: 7px 0 0;
+  font-size: 20px;
+  color: #e0ecff;
 }
 
 .logoutBtn {
-  background: white;
+  background: #ffffff;
   color: #123b7a;
-  font-weight: bold;
+  min-width: 110px;
+}
+
+.logoutBtn:hover {
+  background: #f1f5f9;
 }
 
 .navBar {
-  background: white;
-  padding: 18px 30px;
+  background: #ffffff;
+  padding: 18px 32px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.08);
 }
 
 .navButton {
   background: #e5e7eb;
   color: #111827;
-  font-weight: bold;
+  border-radius: 12px;
+  margin-top: 0;
 }
 
 .navButton.active {
   background: #123b7a;
-  color: white;
+  color: #ffffff;
 }
 
 .mainContent {
-  padding: 30px;
-  max-width: 1200px;
+  padding: 34px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 
 .card {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 34px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09);
+  border: none;
 }
 
 .card h2 {
-  margin-top: 0;
+  margin: 0 0 22px;
   text-align: center;
   color: #123b7a;
-  font-size: 42px;
+  font-size: 38px;
 }
 
 .adminForm {
   background: #f8fafc;
-  padding: 25px;
-  border-radius: 15px;
-  margin-bottom: 35px;
+  padding: 24px;
+  border-radius: 18px;
+  margin-bottom: 30px;
+  border: 1px solid #e2e8f0;
 }
 
 .adminForm h3 {
-  margin-top: 0;
+  margin: 0 0 12px;
   color: #123b7a;
+  font-size: 24px;
 }
 
 .itemList {
@@ -176,16 +202,16 @@ button:hover {
 
 .itemBox {
   background: #f8fafc;
-  border-radius: 15px;
+  border-radius: 18px;
   padding: 22px;
-  margin-bottom: 22px;
-  border-left: 6px solid #123b7a;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
 }
 
 .itemBox h3 {
-  margin-top: 0;
+  margin: 0 0 10px;
   color: #123b7a;
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .itemBox p {
@@ -211,23 +237,29 @@ button:hover {
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    gap: 16px;
+    padding: 24px;
   }
 
   .header h1 {
-    font-size: 32px;
+    font-size: 31px;
   }
 
   .headerLogo {
-    width: 65px;
-    height: 65px;
+    width: 66px;
+    height: 66px;
   }
 
   .navBar {
     flex-direction: column;
+    padding: 16px;
   }
 
   .mainContent {
-    padding: 15px;
+    padding: 16px;
+  }
+
+  .card {
+    padding: 22px;
   }
 }
