@@ -20,21 +20,24 @@ export default function App() {
     "Office Bearers",
     "Club Coaches",
     "Documents",
-    "Admin Settings",
   ];
 
-  const [files, setFiles] = useState({});
+  const [homeText, setHomeText] = useState(
+    "Welcome to Lenzie Bowling Club."
+  );
+
+  const [noticeText, setNoticeText] = useState(
+    "Latest club notices appear here."
+  );
 
   function login() {
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
       setIsAdmin(true);
-      setActiveTab("Admin Settings");
       setPin("");
     } else if (pin === MEMBER_PIN) {
       setLoggedIn(true);
       setIsAdmin(false);
-      setActiveTab("Home");
       setPin("");
     } else {
       alert("Incorrect PIN");
@@ -45,23 +48,6 @@ export default function App() {
     setLoggedIn(false);
     setIsAdmin(false);
     setPin("");
-  }
-
-  function addFile(section, file) {
-    if (!file) return;
-
-    const fileUrl = URL.createObjectURL(file);
-
-    setFiles((prev) => ({
-      ...prev,
-      [section]: [
-        ...(prev[section] || []),
-        {
-          name: file.name,
-          url: fileUrl,
-        },
-      ],
-    }));
   }
 
   if (!loggedIn) {
@@ -77,7 +63,9 @@ export default function App() {
 
           <h1>Lenzie Bowling Club</h1>
 
-          <p>Members App</p>
+          <p className="subtitle">
+            Members App
+          </p>
 
           <input
             type="password"
@@ -90,11 +78,6 @@ export default function App() {
             Login
           </button>
 
-          <div style={{ marginTop: "15px", fontSize: "14px" }}>
-            <p>Admin PIN: 1234</p>
-            <p>Member PIN: 2026</p>
-          </div>
-
         </div>
       </div>
     );
@@ -104,22 +87,23 @@ export default function App() {
     <div className="app">
 
       {/* HEADER */}
-      <header className="topHeader">
+      <header className="header">
 
-        <div className="logoArea">
+        <div className="headerLeft">
 
           <img
             src={logo}
-            alt="Lenzie Bowling Club"
-            className="clubLogo"
+            alt="logo"
+            className="headerLogo"
           />
 
           <div>
             <h1>Lenzie Bowling Club</h1>
+
             <p>
               {isAdmin
                 ? "Administrator Mode"
-                : "Member Mode"}
+                : "Members App"}
             </p>
           </div>
 
@@ -134,202 +118,112 @@ export default function App() {
 
       </header>
 
-      {/* MENU */}
-      <nav className="menuBar">
+      {/* NAVIGATION */}
+      <nav className="navBar">
 
-        {tabs
-          .filter(
-            (tab) =>
-              isAdmin ||
-              tab !== "Admin Settings"
-          )
-          .map((tab) => (
-            <button
-              key={tab}
-              className={
-                activeTab === tab
-                  ? "tab activeTab"
-                  : "tab"
-              }
-              onClick={() =>
-                setActiveTab(tab)
-              }
-            >
-              {tab}
-            </button>
-          ))}
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            className={
+              activeTab === tab
+                ? "navButton active"
+                : "navButton"
+            }
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
 
       </nav>
 
-      {/* MAIN */}
-      <main className="contentArea">
+      {/* CONTENT */}
+      <main className="mainContent">
 
-        {/* WELCOME */}
-        <div className="welcomeCard">
+        {/* HOME */}
+        {activeTab === "Home" && (
+          <div className="card">
 
-          <div className="welcomeText">
+            <h2>Welcome</h2>
 
-            <h2>
-              Welcome to Lenzie Bowling Club
-            </h2>
-
-            <p>
-              Access fixtures, notices,
-              competitions, documents and
-              member information all in one
-              place.
-            </p>
-
-          </div>
-
-          <div className="bowlsGraphic">
-            🏆
-          </div>
-
-        </div>
-
-        {/* DASHBOARD */}
-        <div className="statsGrid">
-
-          <div className="statCard blue">
-
-            <h3>Upcoming Events</h3>
-
-            <div className="bigNumber">
-              3
-            </div>
-
-            <p>
-              Saturday Friendly Match
-            </p>
+            {isAdmin ? (
+              <textarea
+                value={homeText}
+                onChange={(e) =>
+                  setHomeText(e.target.value)
+                }
+              />
+            ) : (
+              <p>{homeText}</p>
+            )}
 
           </div>
+        )}
 
-          <div className="statCard green">
+        {/* NOTICES */}
+        {activeTab === "Notices" && (
+          <div className="card">
 
-            <h3>Latest Notices</h3>
+            <h2>Club Notices</h2>
 
-            <div className="bigNumber">
-              2
-            </div>
-
-            <p>
-              Green Maintenance
-            </p>
-
-          </div>
-
-          <div className="statCard purple">
-
-            <h3>Total Members</h3>
-
-            <div className="bigNumber">
-              42
-            </div>
-
-            <p>
-              2026 Season
-            </p>
+            {isAdmin ? (
+              <textarea
+                value={noticeText}
+                onChange={(e) =>
+                  setNoticeText(e.target.value)
+                }
+              />
+            ) : (
+              <p>{noticeText}</p>
+            )}
 
           </div>
+        )}
 
-        </div>
+        {/* OTHER PAGES */}
+        {activeTab === "Diary" && (
+          <div className="card">
+            <h2>Diary</h2>
+            <p>Upcoming events will appear here.</p>
+          </div>
+        )}
 
-        {/* ACTIVE SECTION */}
-        <div className="sectionBox">
+        {activeTab === "Competitions" && (
+          <div className="card">
+            <h2>Competitions</h2>
+            <p>Competition information here.</p>
+          </div>
+        )}
 
-          <h2>
-            {activeTab}
-          </h2>
+        {activeTab === "Members" && (
+          <div className="card">
+            <h2>Members</h2>
+            <p>Members section.</p>
+          </div>
+        )}
 
-          <p>
-            This is the {activeTab} section.
-          </p>
+        {activeTab === "Office Bearers" && (
+          <div className="card">
+            <h2>Office Bearers</h2>
+            <p>Club officials listed here.</p>
+          </div>
+        )}
 
-          {/* ADMIN FILE UPLOAD */}
-          {isAdmin && (
-            <div className="uploadBox">
+        {activeTab === "Club Coaches" && (
+          <div className="card">
+            <h2>Club Coaches</h2>
+            <p>Coaching information here.</p>
+          </div>
+        )}
 
-              <label className="uploadBtn">
-
-                Add File
-
-                <input
-                  type="file"
-                  hidden
-                  onChange={(e) =>
-                    addFile(
-                      activeTab,
-                      e.target.files[0]
-                    )
-                  }
-                />
-
-              </label>
-
-            </div>
-          )}
-
-          {/* FILES */}
-          {(files[activeTab] || []).length === 0 ? (
-
-            <p className="emptyText">
-              No files uploaded yet.
-            </p>
-
-          ) : (
-
-            (files[activeTab] || []).map(
-              (file, index) => (
-
-                <div
-                  key={index}
-                  className="fileItem"
-                >
-
-                  <a
-                    href={file.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    📄 {file.name}
-                  </a>
-
-                </div>
-
-              )
-            )
-
-          )}
-
-          {/* ADMIN SETTINGS */}
-          {activeTab === "Admin Settings" &&
-            isAdmin && (
-
-            <div className="card">
-
-              <h3>
-                Administrator Controls
-              </h3>
-
-              <p>
-                Upload documents, manage
-                sections and update club
-                information.
-              </p>
-
-            </div>
-
-          )}
-
-        </div>
+        {activeTab === "Documents" && (
+          <div className="card">
+            <h2>Documents</h2>
+            <p>Club documents available here.</p>
+          </div>
+        )}
 
       </main>
-
-      {/* FOOTER */}
-      <footer className="footer">
-        © 2026 Lenzie Bowling Club
-      </footer>
 
     </div>
   );
