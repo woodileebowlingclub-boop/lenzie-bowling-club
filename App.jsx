@@ -1,9 +1,15 @@
 import "./App.css";
-import logo from "./assets/logo.jpg";
+import logo from "./assets/lenzie_logo_small.png";
 import { useState } from "react";
 
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pin, setPin] = useState("");
   const [activeTab, setActiveTab] = useState("Home");
+
+  const ADMIN_PIN = "1234";
+  const MEMBER_PIN = "2026";
 
   const tabs = [
     "Home",
@@ -18,6 +24,28 @@ export default function App() {
   ];
 
   const [files, setFiles] = useState({});
+
+  function login() {
+    if (pin === ADMIN_PIN) {
+      setLoggedIn(true);
+      setIsAdmin(true);
+      setActiveTab("Admin Settings");
+      setPin("");
+    } else if (pin === MEMBER_PIN) {
+      setLoggedIn(true);
+      setIsAdmin(false);
+      setActiveTab("Home");
+      setPin("");
+    } else {
+      alert("Incorrect PIN");
+    }
+  }
+
+  function logout() {
+    setLoggedIn(false);
+    setIsAdmin(false);
+    setPin("");
+  }
 
   function addFile(section, file) {
     if (!file) return;
@@ -36,11 +64,50 @@ export default function App() {
     }));
   }
 
+  if (!loggedIn) {
+    return (
+      <div className="loginPage">
+        <div className="loginBox">
+
+          <img
+            src={logo}
+            alt="Lenzie Bowling Club"
+            className="loginLogo"
+          />
+
+          <h1>Lenzie Bowling Club</h1>
+
+          <p>Members App</p>
+
+          <input
+            type="password"
+            placeholder="Enter PIN"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+          />
+
+          <button onClick={login}>
+            Login
+          </button>
+
+          <div style={{ marginTop: "15px", fontSize: "14px" }}>
+            <p>Admin PIN: 1234</p>
+            <p>Member PIN: 2026</p>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
+
       {/* HEADER */}
       <header className="topHeader">
+
         <div className="logoArea">
+
           <img
             src={logo}
             alt="Lenzie Bowling Club"
@@ -49,60 +116,83 @@ export default function App() {
 
           <div>
             <h1>Lenzie Bowling Club</h1>
-            <p>Members App</p>
+            <p>
+              {isAdmin
+                ? "Administrator Mode"
+                : "Member Mode"}
+            </p>
           </div>
+
         </div>
 
-        <button className="logoutBtn">
+        <button
+          className="logoutBtn"
+          onClick={logout}
+        >
           Log Out
         </button>
+
       </header>
 
       {/* MENU */}
       <nav className="menuBar">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            className={
-              activeTab === tab
-                ? "tab activeTab"
-                : "tab"
-            }
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+
+        {tabs
+          .filter(
+            (tab) =>
+              isAdmin ||
+              tab !== "Admin Settings"
+          )
+          .map((tab) => (
+            <button
+              key={tab}
+              className={
+                activeTab === tab
+                  ? "tab activeTab"
+                  : "tab"
+              }
+              onClick={() =>
+                setActiveTab(tab)
+              }
+            >
+              {tab}
+            </button>
+          ))}
+
       </nav>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <main className="contentArea">
 
-        {/* WELCOME SECTION */}
+        {/* WELCOME */}
         <div className="welcomeCard">
+
           <div className="welcomeText">
+
             <h2>
               Welcome to Lenzie Bowling Club
             </h2>
 
             <p>
-              Welcome to our new members app.
-              Use the sections above to access
-              fixtures, notices, competitions,
-              club documents and member
-              information.
+              Access fixtures, notices,
+              competitions, documents and
+              member information all in one
+              place.
             </p>
+
           </div>
 
           <div className="bowlsGraphic">
             🏆
           </div>
+
         </div>
 
-        {/* DASHBOARD CARDS */}
+        {/* DASHBOARD */}
         <div className="statsGrid">
 
           <div className="statCard blue">
+
             <h3>Upcoming Events</h3>
 
             <div className="bigNumber">
@@ -110,15 +200,13 @@ export default function App() {
             </div>
 
             <p>
-              Next Event:
-            </p>
-
-            <p>
               Saturday Friendly Match
             </p>
+
           </div>
 
           <div className="statCard green">
+
             <h3>Latest Notices</h3>
 
             <div className="bigNumber">
@@ -129,12 +217,10 @@ export default function App() {
               Green Maintenance
             </p>
 
-            <p>
-              Monday 11 May 2026
-            </p>
           </div>
 
           <div className="statCard purple">
+
             <h3>Total Members</h3>
 
             <div className="bigNumber">
@@ -142,12 +228,9 @@ export default function App() {
             </div>
 
             <p>
-              Active Members
-            </p>
-
-            <p>
               2026 Season
             </p>
+
           </div>
 
         </div>
@@ -163,38 +246,47 @@ export default function App() {
             This is the {activeTab} section.
           </p>
 
-          {/* FILE UPLOAD */}
-          <div className="uploadBox">
+          {/* ADMIN FILE UPLOAD */}
+          {isAdmin && (
+            <div className="uploadBox">
 
-            <label className="uploadBtn">
-              Add File
+              <label className="uploadBtn">
 
-              <input
-                type="file"
-                hidden
-                onChange={(e) =>
-                  addFile(
-                    activeTab,
-                    e.target.files[0]
-                  )
-                }
-              />
-            </label>
+                Add File
 
-          </div>
+                <input
+                  type="file"
+                  hidden
+                  onChange={(e) =>
+                    addFile(
+                      activeTab,
+                      e.target.files[0]
+                    )
+                  }
+                />
 
-          {/* FILE LIST */}
+              </label>
+
+            </div>
+          )}
+
+          {/* FILES */}
           {(files[activeTab] || []).length === 0 ? (
+
             <p className="emptyText">
               No files uploaded yet.
             </p>
+
           ) : (
+
             (files[activeTab] || []).map(
               (file, index) => (
+
                 <div
                   key={index}
                   className="fileItem"
                 >
+
                   <a
                     href={file.url}
                     target="_blank"
@@ -202,9 +294,32 @@ export default function App() {
                   >
                     📄 {file.name}
                   </a>
+
                 </div>
+
               )
             )
+
+          )}
+
+          {/* ADMIN SETTINGS */}
+          {activeTab === "Admin Settings" &&
+            isAdmin && (
+
+            <div className="card">
+
+              <h3>
+                Administrator Controls
+              </h3>
+
+              <p>
+                Upload documents, manage
+                sections and update club
+                information.
+              </p>
+
+            </div>
+
           )}
 
         </div>
@@ -215,6 +330,7 @@ export default function App() {
       <footer className="footer">
         © 2026 Lenzie Bowling Club
       </footer>
+
     </div>
   );
 }
