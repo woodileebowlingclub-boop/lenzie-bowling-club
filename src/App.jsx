@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import logo from "./assets/logo.jpg";
+import logo from "./assets/lenzie_logo_small.png";
 
 const DEFAULT_ADMIN_PIN = "1234";
 const DEFAULT_MEMBER_PIN = "2026";
