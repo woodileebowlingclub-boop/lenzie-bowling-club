@@ -3,13 +3,23 @@ import logo from "./assets/lenzie_logo_small.png";
 import { useState } from "react";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [pin, setPin] = useState("");
-  const [activeTab, setActiveTab] = useState("Home");
 
   const ADMIN_PIN = "1234";
   const MEMBER_PIN = "2026";
+
+  const [pin, setPin] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const [activeTab, setActiveTab] = useState("Home");
+
+  const [homeText, setHomeText] = useState(
+    "Welcome to Lenzie Bowling Club."
+  );
+
+  const [noticeText, setNoticeText] = useState(
+    "Latest club notices appear here."
+  );
 
   const tabs = [
     "Home",
@@ -22,24 +32,21 @@ export default function App() {
     "Documents",
   ];
 
-  const [homeText, setHomeText] = useState(
-    "Welcome to Lenzie Bowling Club."
-  );
-
-  const [noticeText, setNoticeText] = useState(
-    "Latest club notices appear here."
-  );
-
   function login() {
+
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
       setIsAdmin(true);
       setPin("");
-    } else if (pin === MEMBER_PIN) {
+    }
+
+    else if (pin === MEMBER_PIN) {
       setLoggedIn(true);
       setIsAdmin(false);
       setPin("");
-    } else {
+    }
+
+    else {
       alert("Incorrect PIN");
     }
   }
@@ -52,7 +59,9 @@ export default function App() {
 
   if (!loggedIn) {
     return (
+
       <div className="loginPage">
+
         <div className="loginBox">
 
           <img
@@ -79,14 +88,17 @@ export default function App() {
           </button>
 
         </div>
+
       </div>
     );
   }
 
   return (
+
     <div className="app">
 
       {/* HEADER */}
+
       <header className="header">
 
         <div className="headerLeft">
@@ -98,6 +110,7 @@ export default function App() {
           />
 
           <div>
+
             <h1>Lenzie Bowling Club</h1>
 
             <p>
@@ -105,6 +118,7 @@ export default function App() {
                 ? "Administrator Mode"
                 : "Members App"}
             </p>
+
           </div>
 
         </div>
@@ -119,9 +133,11 @@ export default function App() {
       </header>
 
       {/* NAVIGATION */}
+
       <nav className="navBar">
 
         {tabs.map((tab) => (
+
           <button
             key={tab}
             className={
@@ -133,93 +149,180 @@ export default function App() {
           >
             {tab}
           </button>
+
         ))}
 
       </nav>
 
       {/* CONTENT */}
+
       <main className="mainContent">
 
         {/* HOME */}
+
         {activeTab === "Home" && (
+
           <div className="card">
 
             <h2>Welcome</h2>
 
             {isAdmin ? (
-              <textarea
-                value={homeText}
-                onChange={(e) =>
-                  setHomeText(e.target.value)
-                }
-              />
+
+              <>
+
+                <textarea
+                  value={homeText}
+                  onChange={(e) =>
+                    setHomeText(e.target.value)
+                  }
+                />
+
+                <button
+                  style={{ marginTop: "15px" }}
+                  onClick={() =>
+                    alert("Home page updated")
+                  }
+                >
+                  Save Changes
+                </button>
+
+              </>
+
             ) : (
+
               <p>{homeText}</p>
+
             )}
+
+          </div>
+        )}
+
+        {/* DIARY */}
+
+        {activeTab === "Diary" && (
+
+          <div className="card">
+
+            <h2>Diary</h2>
+
+            <p>
+              Upcoming events will appear here.
+            </p>
 
           </div>
         )}
 
         {/* NOTICES */}
+
         {activeTab === "Notices" && (
+
           <div className="card">
 
             <h2>Club Notices</h2>
 
             {isAdmin ? (
-              <textarea
-                value={noticeText}
-                onChange={(e) =>
-                  setNoticeText(e.target.value)
-                }
-              />
+
+              <>
+
+                <textarea
+                  value={noticeText}
+                  onChange={(e) =>
+                    setNoticeText(e.target.value)
+                  }
+                />
+
+                <button
+                  style={{ marginTop: "15px" }}
+                  onClick={() =>
+                    alert("Notice updated")
+                  }
+                >
+                  Save Notice
+                </button>
+
+              </>
+
             ) : (
+
               <p>{noticeText}</p>
+
             )}
 
           </div>
         )}
 
-        {/* OTHER PAGES */}
-        {activeTab === "Diary" && (
-          <div className="card">
-            <h2>Diary</h2>
-            <p>Upcoming events will appear here.</p>
-          </div>
-        )}
+        {/* COMPETITIONS */}
 
         {activeTab === "Competitions" && (
+
           <div className="card">
+
             <h2>Competitions</h2>
-            <p>Competition information here.</p>
+
+            <p>
+              Competition information here.
+            </p>
+
           </div>
         )}
+
+        {/* MEMBERS */}
 
         {activeTab === "Members" && (
+
           <div className="card">
+
             <h2>Members</h2>
-            <p>Members section.</p>
+
+            <p>
+              Members section.
+            </p>
+
           </div>
         )}
+
+        {/* OFFICE BEARERS */}
 
         {activeTab === "Office Bearers" && (
+
           <div className="card">
+
             <h2>Office Bearers</h2>
-            <p>Club officials listed here.</p>
+
+            <p>
+              Club officials listed here.
+            </p>
+
           </div>
         )}
+
+        {/* COACHES */}
 
         {activeTab === "Club Coaches" && (
+
           <div className="card">
+
             <h2>Club Coaches</h2>
-            <p>Coaching information here.</p>
+
+            <p>
+              Coaching information here.
+            </p>
+
           </div>
         )}
 
+        {/* DOCUMENTS */}
+
         {activeTab === "Documents" && (
+
           <div className="card">
+
             <h2>Documents</h2>
-            <p>Club documents available here.</p>
+
+            <p>
+              Club documents available here.
+            </p>
+
           </div>
         )}
 
