@@ -1,77 +1,45 @@
 import "./App.css";
 import logo from "./assets/lenzie_logo_small.png";
-import { useEffect, useState } from "react";
-
-const ADMIN_PIN = "1234";
-const MEMBER_PIN = "2026";
-
-const sections = [
-  "Home",
-  "Diary",
-  "Notices",
-  "Competitions",
-  "Members",
-  "Office Bearers",
-  "Club Coaches",
-  "Documents",
-];
-
-const emptyForm = {
-  title: "",
-  date: "",
-  time: "",
-  place: "",
-  details: "",
-  fileName: "",
-  fileUrl: "",
-};
+import { useState } from "react";
 
 export default function App() {
+  const ADMIN_PIN = "1234";
+  const MEMBER_PIN = "2026";
+
   const [pin, setPin] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminMode, setAdminMode] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
-  const [form, setForm] = useState(emptyForm);
 
-  const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem("lenzieAppItems");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          Home: [
-            {
-              title: "Welcome to Lenzie Bowling Club",
-              date: "",
-              time: "",
-              place: "Lenzie Bowling Club",
-              details: "Welcome to our new members app.",
-              fileName: "",
-              fileUrl: "",
-            },
-          ],
-          Diary: [],
-          Notices: [],
-          Competitions: [],
-          Members: [],
-          "Office Bearers": [],
-          "Club Coaches": [],
-          Documents: [],
-        };
-  });
+  const [diaryText, setDiaryText] = useState("");
+  const [noticeText, setNoticeText] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("lenzieAppItems", JSON.stringify(items));
-  }, [items]);
+  const [memberName, setMemberName] = useState("");
+  const [memberPhone, setMemberPhone] = useState("");
+  const [memberWhatsapp, setMemberWhatsapp] = useState("");
+  const [memberEmail, setMemberEmail] = useState("");
+  const [members, setMembers] = useState([]);
+
+  const [officeName, setOfficeName] = useState("");
+  const [officeRole, setOfficeRole] = useState("");
+  const [officePhone, setOfficePhone] = useState("");
+  const [officeWhatsapp, setOfficeWhatsapp] = useState("");
+  const [officeEmail, setOfficeEmail] = useState("");
+  const [officeBearers, setOfficeBearers] = useState([]);
+
+  const [coachName, setCoachName] = useState("");
+  const [coachPhone, setCoachPhone] = useState("");
+  const [coachWhatsapp, setCoachWhatsapp] = useState("");
+  const [coachEmail, setCoachEmail] = useState("");
+  const [coaches, setCoaches] = useState([]);
 
   function login() {
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
-      setIsAdmin(true);
-      setPin("");
+      setAdminMode(true);
     } else if (pin === MEMBER_PIN) {
       setLoggedIn(true);
-      setIsAdmin(false);
-      setPin("");
+      setAdminMode(false);
     } else {
       alert("Incorrect PIN");
     }
@@ -79,48 +47,74 @@ export default function App() {
 
   function logout() {
     setLoggedIn(false);
-    setIsAdmin(false);
+    setAdminMode(false);
     setPin("");
-    setActiveTab("Home");
   }
 
-  function handleFile(file) {
-    if (!file) return;
+  function addMember() {
+    if (!memberName) return;
 
-    setForm({
-      ...form,
-      fileName: file.name,
-      fileUrl: URL.createObjectURL(file),
-    });
+    const newMember = {
+      name: memberName,
+      phone: memberPhone,
+      whatsapp: memberWhatsapp,
+      email: memberEmail,
+    };
+
+    setMembers([...members, newMember]);
+
+    setMemberName("");
+    setMemberPhone("");
+    setMemberWhatsapp("");
+    setMemberEmail("");
   }
 
-  function addItem() {
-    if (!form.title.trim() && !form.details.trim()) {
-      alert("Add a title or details first.");
-      return;
-    }
+  function addOfficeBearer() {
+    if (!officeName) return;
 
-    setItems({
-      ...items,
-      [activeTab]: [...(items[activeTab] || []), form],
-    });
+    const newOfficeBearer = {
+      name: officeName,
+      role: officeRole,
+      phone: officePhone,
+      whatsapp: officeWhatsapp,
+      email: officeEmail,
+    };
 
-    setForm(emptyForm);
+    setOfficeBearers([...officeBearers, newOfficeBearer]);
+
+    setOfficeName("");
+    setOfficeRole("");
+    setOfficePhone("");
+    setOfficeWhatsapp("");
+    setOfficeEmail("");
   }
 
-  function deleteItem(index) {
-    setItems({
-      ...items,
-      [activeTab]: items[activeTab].filter((_, i) => i !== index),
-    });
+  function addCoach() {
+    if (!coachName) return;
+
+    const newCoach = {
+      name: coachName,
+      phone: coachPhone,
+      whatsapp: coachWhatsapp,
+      email: coachEmail,
+    };
+
+    setCoaches([...coaches, newCoach]);
+
+    setCoachName("");
+    setCoachPhone("");
+    setCoachWhatsapp("");
+    setCoachEmail("");
   }
 
   if (!loggedIn) {
     return (
       <div className="loginPage">
         <div className="loginBox">
-          <img src={logo} alt="Lenzie Bowling Club" className="loginLogo" />
+          <img src={logo} alt="Logo" className="loginLogo" />
+
           <h1>Lenzie Bowling Club</h1>
+
           <p className="subtitle">Members App</p>
 
           <input
@@ -138,129 +132,313 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="header">
+      <div className="header">
         <div className="headerLeft">
-          <img src={logo} alt="logo" className="headerLogo" />
+          <img src={logo} alt="Logo" className="headerLogo" />
+
           <div>
             <h1>Lenzie Bowling Club</h1>
-            <p>{isAdmin ? "Administrator Mode" : "Members App"}</p>
+
+            <p>
+              {adminMode ? "Administrator Mode" : "Members Area"}
+            </p>
           </div>
         </div>
 
         <button className="logoutBtn" onClick={logout}>
           Log Out
         </button>
-      </header>
+      </div>
 
-      <nav className="navBar">
-        {sections.map((section) => (
+      <div className="navBar">
+        {[
+          "Home",
+          "Diary",
+          "Notices",
+          "Competitions",
+          "Members",
+          "Office Bearers",
+          "Club Coaches",
+          "Documents",
+        ].map((tab) => (
           <button
-            key={section}
-            className={activeTab === section ? "navButton active" : "navButton"}
-            onClick={() => {
-              setActiveTab(section);
-              setForm(emptyForm);
-            }}
+            key={tab}
+            className={`navButton ${
+              activeTab === tab ? "active" : ""
+            }`}
+            onClick={() => setActiveTab(tab)}
           >
-            {section}
+            {tab}
           </button>
         ))}
-      </nav>
+      </div>
 
-      <main className="mainContent">
+      <div className="mainContent">
         <div className="card">
-          <h2>{activeTab}</h2>
 
-          {isAdmin && (
-            <div className="adminForm">
-              <h3>Add to {activeTab}</h3>
+          {activeTab === "Home" && (
+            <>
+              <h2>Welcome</h2>
 
-              <input
-                placeholder="Title / Name"
-                value={form.title}
-                onChange={(e) =>
-                  setForm({ ...form, title: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Date"
-                value={form.date}
-                onChange={(e) =>
-                  setForm({ ...form, date: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Time"
-                value={form.time}
-                onChange={(e) =>
-                  setForm({ ...form, time: e.target.value })
-                }
-              />
-
-              <input
-                placeholder="Place"
-                value={form.place}
-                onChange={(e) =>
-                  setForm({ ...form, place: e.target.value })
-                }
-              />
-
-              <textarea
-                placeholder="Details"
-                value={form.details}
-                onChange={(e) =>
-                  setForm({ ...form, details: e.target.value })
-                }
-              />
-
-              <input
-                type="file"
-                onChange={(e) => handleFile(e.target.files[0])}
-              />
-
-              {form.fileName && <p>Selected file: {form.fileName}</p>}
-
-              <button onClick={addItem}>Add to {activeTab}</button>
-            </div>
+              <p>
+                Welcome to the Lenzie Bowling Club Members App.
+              </p>
+            </>
           )}
 
-          <div className="itemList">
-            {(items[activeTab] || []).length === 0 ? (
-              <p>No entries yet.</p>
-            ) : (
-              items[activeTab].map((item, index) => (
-                <div className="itemBox" key={index}>
-                  <h3>{item.title}</h3>
+          {activeTab === "Diary" && (
+            <>
+              <h2>Diary</h2>
 
-                  {item.date && <p><strong>Date:</strong> {item.date}</p>}
-                  {item.time && <p><strong>Time:</strong> {item.time}</p>}
-                  {item.place && <p><strong>Place:</strong> {item.place}</p>}
-                  {item.details && <p>{item.details}</p>}
-
-                  {item.fileUrl && (
-                    <p>
-                      <a href={item.fileUrl} target="_blank" rel="noreferrer">
-                        Open file: {item.fileName}
-                      </a>
-                    </p>
-                  )}
-
-                  {isAdmin && (
-                    <button
-                      className="deleteBtn"
-                      onClick={() => deleteItem(index)}
-                    >
-                      Delete
-                    </button>
-                  )}
+              {adminMode && (
+                <div className="adminForm">
+                  <textarea
+                    placeholder="Add diary event..."
+                    value={diaryText}
+                    onChange={(e) => setDiaryText(e.target.value)}
+                  />
                 </div>
-              ))
-            )}
-          </div>
+              )}
+
+              <div className="itemBox">
+                <p>{diaryText || "No diary events added."}</p>
+              </div>
+            </>
+          )}
+
+          {activeTab === "Notices" && (
+            <>
+              <h2>Notices</h2>
+
+              {adminMode && (
+                <div className="adminForm">
+                  <textarea
+                    placeholder="Add notice..."
+                    value={noticeText}
+                    onChange={(e) => setNoticeText(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="itemBox">
+                <p>{noticeText || "No notices added."}</p>
+              </div>
+            </>
+          )}
+
+          {activeTab === "Members" && (
+            <>
+              <h2>Members</h2>
+
+              {adminMode && (
+                <div className="adminForm">
+                  <h3>Add Member</h3>
+
+                  <input
+                    placeholder="Member name"
+                    value={memberName}
+                    onChange={(e) =>
+                      setMemberName(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Phone number"
+                    value={memberPhone}
+                    onChange={(e) =>
+                      setMemberPhone(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="WhatsApp number"
+                    value={memberWhatsapp}
+                    onChange={(e) =>
+                      setMemberWhatsapp(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Email address"
+                    value={memberEmail}
+                    onChange={(e) =>
+                      setMemberEmail(e.target.value)
+                    }
+                  />
+
+                  <button onClick={addMember}>
+                    Add Member
+                  </button>
+                </div>
+              )}
+
+              {members.map((member, index) => (
+                <div className="itemBox" key={index}>
+                  <h3>{member.name}</h3>
+
+                  <p>Phone: {member.phone}</p>
+
+                  <p>WhatsApp: {member.whatsapp}</p>
+
+                  <p>Email: {member.email}</p>
+                </div>
+              ))}
+            </>
+          )}
+
+          {activeTab === "Office Bearers" && (
+            <>
+              <h2>Office Bearers</h2>
+
+              {adminMode && (
+                <div className="adminForm">
+                  <h3>Add Office Bearer</h3>
+
+                  <input
+                    placeholder="Name"
+                    value={officeName}
+                    onChange={(e) =>
+                      setOfficeName(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Role"
+                    value={officeRole}
+                    onChange={(e) =>
+                      setOfficeRole(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Phone number"
+                    value={officePhone}
+                    onChange={(e) =>
+                      setOfficePhone(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="WhatsApp number"
+                    value={officeWhatsapp}
+                    onChange={(e) =>
+                      setOfficeWhatsapp(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Email address"
+                    value={officeEmail}
+                    onChange={(e) =>
+                      setOfficeEmail(e.target.value)
+                    }
+                  />
+
+                  <button onClick={addOfficeBearer}>
+                    Add Office Bearer
+                  </button>
+                </div>
+              )}
+
+              {officeBearers.map((person, index) => (
+                <div className="itemBox" key={index}>
+                  <h3>{person.name}</h3>
+
+                  <p>{person.role}</p>
+
+                  <p>Phone: {person.phone}</p>
+
+                  <p>WhatsApp: {person.whatsapp}</p>
+
+                  <p>Email: {person.email}</p>
+                </div>
+              ))}
+            </>
+          )}
+
+          {activeTab === "Club Coaches" && (
+            <>
+              <h2>Club Coaches</h2>
+
+              {adminMode && (
+                <div className="adminForm">
+                  <h3>Add Coach</h3>
+
+                  <input
+                    placeholder="Coach name"
+                    value={coachName}
+                    onChange={(e) =>
+                      setCoachName(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Phone number"
+                    value={coachPhone}
+                    onChange={(e) =>
+                      setCoachPhone(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="WhatsApp number"
+                    value={coachWhatsapp}
+                    onChange={(e) =>
+                      setCoachWhatsapp(e.target.value)
+                    }
+                  />
+
+                  <input
+                    placeholder="Email address"
+                    value={coachEmail}
+                    onChange={(e) =>
+                      setCoachEmail(e.target.value)
+                    }
+                  />
+
+                  <button onClick={addCoach}>
+                    Add Coach
+                  </button>
+                </div>
+              )}
+
+              {coaches.map((coach, index) => (
+                <div className="itemBox" key={index}>
+                  <h3>{coach.name}</h3>
+
+                  <p>Phone: {coach.phone}</p>
+
+                  <p>WhatsApp: {coach.whatsapp}</p>
+
+                  <p>Email: {coach.email}</p>
+                </div>
+              ))}
+            </>
+          )}
+
+          {activeTab === "Competitions" && (
+            <>
+              <h2>Competitions</h2>
+
+              <div className="itemBox">
+                <p>
+                  Competition information will appear here.
+                </p>
+              </div>
+            </>
+          )}
+
+          {activeTab === "Documents" && (
+            <>
+              <h2>Documents</h2>
+
+              <div className="itemBox">
+                <p>Club documents will appear here.</p>
+              </div>
+            </>
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
