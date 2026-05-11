@@ -3,23 +3,8 @@ import logo from "./assets/lenzie_logo_small.png";
 import { useState } from "react";
 
 export default function App() {
-
   const ADMIN_PIN = "1234";
   const MEMBER_PIN = "2026";
-
-  const [pin, setPin] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  const [activeTab, setActiveTab] = useState("Home");
-
-  const [homeText, setHomeText] = useState(
-    "Welcome to Lenzie Bowling Club."
-  );
-
-  const [noticeText, setNoticeText] = useState(
-    "Latest club notices appear here."
-  );
 
   const tabs = [
     "Home",
@@ -32,21 +17,34 @@ export default function App() {
     "Documents",
   ];
 
-  function login() {
+  const [pin, setPin] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState("Home");
 
+  const [sectionText, setSectionText] = useState({
+    Home: "Welcome to Lenzie Bowling Club.",
+    Diary: "Upcoming events will appear here.",
+    Notices: "Latest club notices appear here.",
+    Competitions: "Competition information will appear here.",
+    Members: "Members information will appear here.",
+    "Office Bearers": "Club officials will appear here.",
+    "Club Coaches": "Coaching information will appear here.",
+    Documents: "Club documents will appear here.",
+  });
+
+  function login() {
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
       setIsAdmin(true);
+      setActiveTab("Home");
       setPin("");
-    }
-
-    else if (pin === MEMBER_PIN) {
+    } else if (pin === MEMBER_PIN) {
       setLoggedIn(true);
       setIsAdmin(false);
+      setActiveTab("Home");
       setPin("");
-    }
-
-    else {
+    } else {
       alert("Incorrect PIN");
     }
   }
@@ -55,26 +53,24 @@ export default function App() {
     setLoggedIn(false);
     setIsAdmin(false);
     setPin("");
+    setActiveTab("Home");
+  }
+
+  function updateSection(value) {
+    setSectionText({
+      ...sectionText,
+      [activeTab]: value,
+    });
   }
 
   if (!loggedIn) {
     return (
-
       <div className="loginPage">
-
         <div className="loginBox">
-
-          <img
-            src={logo}
-            alt="Lenzie Bowling Club"
-            className="loginLogo"
-          />
+          <img src={logo} alt="Lenzie Bowling Club" className="loginLogo" />
 
           <h1>Lenzie Bowling Club</h1>
-
-          <p className="subtitle">
-            Members App
-          </p>
+          <p className="subtitle">Members App</p>
 
           <input
             type="password"
@@ -83,251 +79,64 @@ export default function App() {
             onChange={(e) => setPin(e.target.value)}
           />
 
-          <button onClick={login}>
-            Login
-          </button>
-
+          <button onClick={login}>Login</button>
         </div>
-
       </div>
     );
   }
 
   return (
-
     <div className="app">
-
-      {/* HEADER */}
-
       <header className="header">
-
         <div className="headerLeft">
-
-          <img
-            src={logo}
-            alt="logo"
-            className="headerLogo"
-          />
+          <img src={logo} alt="logo" className="headerLogo" />
 
           <div>
-
             <h1>Lenzie Bowling Club</h1>
-
-            <p>
-              {isAdmin
-                ? "Administrator Mode"
-                : "Members App"}
-            </p>
-
+            <p>{isAdmin ? "Administrator Mode" : "Members App"}</p>
           </div>
-
         </div>
 
-        <button
-          className="logoutBtn"
-          onClick={logout}
-        >
+        <button className="logoutBtn" onClick={logout}>
           Log Out
         </button>
-
       </header>
 
-      {/* NAVIGATION */}
-
       <nav className="navBar">
-
         {tabs.map((tab) => (
-
           <button
             key={tab}
-            className={
-              activeTab === tab
-                ? "navButton active"
-                : "navButton"
-            }
+            className={activeTab === tab ? "navButton active" : "navButton"}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
           </button>
-
         ))}
-
       </nav>
 
-      {/* CONTENT */}
-
       <main className="mainContent">
+        <div className="card">
+          <h2>{activeTab}</h2>
 
-        {/* HOME */}
+          {isAdmin ? (
+            <>
+              <textarea
+                value={sectionText[activeTab]}
+                onChange={(e) => updateSection(e.target.value)}
+              />
 
-        {activeTab === "Home" && (
-
-          <div className="card">
-
-            <h2>Welcome</h2>
-
-            {isAdmin ? (
-
-              <>
-
-                <textarea
-                  value={homeText}
-                  onChange={(e) =>
-                    setHomeText(e.target.value)
-                  }
-                />
-
-                <button
-                  style={{ marginTop: "15px" }}
-                  onClick={() =>
-                    alert("Home page updated")
-                  }
-                >
-                  Save Changes
-                </button>
-
-              </>
-
-            ) : (
-
-              <p>{homeText}</p>
-
-            )}
-
-          </div>
-        )}
-
-        {/* DIARY */}
-
-        {activeTab === "Diary" && (
-
-          <div className="card">
-
-            <h2>Diary</h2>
-
-            <p>
-              Upcoming events will appear here.
-            </p>
-
-          </div>
-        )}
-
-        {/* NOTICES */}
-
-        {activeTab === "Notices" && (
-
-          <div className="card">
-
-            <h2>Club Notices</h2>
-
-            {isAdmin ? (
-
-              <>
-
-                <textarea
-                  value={noticeText}
-                  onChange={(e) =>
-                    setNoticeText(e.target.value)
-                  }
-                />
-
-                <button
-                  style={{ marginTop: "15px" }}
-                  onClick={() =>
-                    alert("Notice updated")
-                  }
-                >
-                  Save Notice
-                </button>
-
-              </>
-
-            ) : (
-
-              <p>{noticeText}</p>
-
-            )}
-
-          </div>
-        )}
-
-        {/* COMPETITIONS */}
-
-        {activeTab === "Competitions" && (
-
-          <div className="card">
-
-            <h2>Competitions</h2>
-
-            <p>
-              Competition information here.
-            </p>
-
-          </div>
-        )}
-
-        {/* MEMBERS */}
-
-        {activeTab === "Members" && (
-
-          <div className="card">
-
-            <h2>Members</h2>
-
-            <p>
-              Members section.
-            </p>
-
-          </div>
-        )}
-
-        {/* OFFICE BEARERS */}
-
-        {activeTab === "Office Bearers" && (
-
-          <div className="card">
-
-            <h2>Office Bearers</h2>
-
-            <p>
-              Club officials listed here.
-            </p>
-
-          </div>
-        )}
-
-        {/* COACHES */}
-
-        {activeTab === "Club Coaches" && (
-
-          <div className="card">
-
-            <h2>Club Coaches</h2>
-
-            <p>
-              Coaching information here.
-            </p>
-
-          </div>
-        )}
-
-        {/* DOCUMENTS */}
-
-        {activeTab === "Documents" && (
-
-          <div className="card">
-
-            <h2>Documents</h2>
-
-            <p>
-              Club documents available here.
-            </p>
-
-          </div>
-        )}
-
+              <button
+                style={{ marginTop: "15px" }}
+                onClick={() => alert(`${activeTab} updated`)}
+              >
+                Save {activeTab}
+              </button>
+            </>
+          ) : (
+            <p>{sectionText[activeTab]}</p>
+          )}
+        </div>
       </main>
-
     </div>
   );
 }
