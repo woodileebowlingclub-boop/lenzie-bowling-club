@@ -3,11 +3,11 @@ import logo from "./assets/lenzie_logo_small.png";
 import { useState } from "react";
 
 export default function App() {
+  const ADMIN_PIN = "1234";
+
   const [loggedIn, setLoggedIn] = useState(false);
   const [pin, setPin] = useState("");
   const [activeTab, setActiveTab] = useState("Home");
-
-  const ADMIN_PIN = "1234";
 
   const tabs = [
     "Home",
@@ -18,282 +18,134 @@ export default function App() {
     "Office Bearers",
     "Club Coaches",
     "Documents",
-    "Admin Settings",
   ];
 
-  const [files, setFiles] = useState({});
-
-  function login() {
+  function handleLogin(e) {
+    e.preventDefault();
     if (pin === ADMIN_PIN) {
       setLoggedIn(true);
     } else {
-      alert("Incorrect PIN");
+      alert("Wrong PIN");
     }
-  }
-
-  function logout() {
-    setLoggedIn(false);
-    setPin("");
-  }
-
-  function addFile(section, file) {
-    if (!file) return;
-
-    const fileUrl = URL.createObjectURL(file);
-
-    setFiles((prev) => ({
-      ...prev,
-      [section]: [
-        ...(prev[section] || []),
-        {
-          name: file.name,
-          url: fileUrl,
-        },
-      ],
-    }));
-  }
-
-  if (!loggedIn) {
-    return (
-      <div className="loginPage">
-        <div className="loginBox">
-
-          <img
-            src={logo}
-            alt="Lenzie Bowling Club"
-            className="loginLogo"
-          />
-
-          <h1>Lenzie Bowling Club</h1>
-
-          <p>Members App</p>
-
-          <input
-            type="password"
-            placeholder="Enter PIN"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-          />
-
-          <button onClick={login}>
-            Login
-          </button>
-
-        </div>
-      </div>
-    );
   }
 
   return (
     <div className="app">
-
-      {/* HEADER */}
-      <header className="topHeader">
-
-        <div className="logoArea">
-
-          <img
-            src={logo}
-            alt="Lenzie Bowling Club"
-            className="clubLogo"
-          />
-
-          <div>
-            <h1>Lenzie Bowling Club</h1>
-            <p>Members App</p>
-          </div>
-
+      <header className="club-header">
+        <div className="logo-wrap">
+          <img src={logo} alt="Lenzie Bowling Club" className="club-logo" />
         </div>
 
-        <button
-          className="logoutBtn"
-          onClick={logout}
-        >
-          Log Out
-        </button>
-
+        <div>
+          <h1>Lenzie Bowling Club</h1>
+          <p>Members diary, notices, competitions and club information</p>
+        </div>
       </header>
 
-      {/* MENU */}
-      <nav className="menuBar">
+      {!loggedIn && (
+        <section className="login-card">
+          <h2>Admin Login</h2>
+          <form onSubmit={handleLogin}>
+            <input
+              type="password"
+              placeholder="Enter admin PIN"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+            />
+            <button type="submit">Login</button>
+          </form>
+        </section>
+      )}
 
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            className={
-              activeTab === tab
-                ? "tab activeTab"
-                : "tab"
-            }
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+      {loggedIn && (
+        <>
+          <nav className="tabs">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={activeTab === tab ? "active" : ""}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
 
-      </nav>
+          <main className="content-card">
+            <h2>{activeTab}</h2>
 
-      {/* MAIN CONTENT */}
-      <main className="contentArea">
+            {activeTab === "Home" && (
+              <p>Welcome to the Lenzie Bowling Club members app.</p>
+            )}
 
-        {/* WELCOME */}
-        <div className="welcomeCard">
+            {activeTab === "Diary" && (
+              <SectionForm section="Diary" />
+            )}
 
-          <div className="welcomeText">
+            {activeTab === "Notices" && (
+              <SectionForm section="Notice" />
+            )}
 
-            <h2>
-              Welcome to Lenzie Bowling Club
-            </h2>
+            {activeTab === "Competitions" && (
+              <SectionForm section="Competition" />
+            )}
 
-            <p>
-              Welcome to our new members app.
-              Use the sections above to access
-              fixtures, notices, competitions,
-              member information and club documents.
-            </p>
+            {activeTab === "Members" && (
+              <ContactForm section="Member" />
+            )}
 
-          </div>
+            {activeTab === "Office Bearers" && (
+              <ContactForm section="Office Bearer" />
+            )}
 
-          <div className="bowlsGraphic">
-            🏆
-          </div>
+            {activeTab === "Club Coaches" && (
+              <ContactForm section="Club Coach" />
+            )}
 
-        </div>
-
-        {/* INFO CARDS */}
-        <div className="statsGrid">
-
-          <div className="statCard blue">
-
-            <h3>Upcoming Events</h3>
-
-            <div className="bigNumber">
-              3
-            </div>
-
-            <p>
-              Next Event:
-            </p>
-
-            <p>
-              Saturday Friendly Match
-            </p>
-
-          </div>
-
-          <div className="statCard green">
-
-            <h3>Latest Notices</h3>
-
-            <div className="bigNumber">
-              2
-            </div>
-
-            <p>
-              Green Maintenance
-            </p>
-
-            <p>
-              Monday 11 May 2026
-            </p>
-
-          </div>
-
-          <div className="statCard purple">
-
-            <h3>Total Members</h3>
-
-            <div className="bigNumber">
-              42
-            </div>
-
-            <p>
-              Active Members
-            </p>
-
-            <p>
-              2026 Season
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* ACTIVE SECTION */}
-        <div className="sectionBox">
-
-          <h2>
-            {activeTab}
-          </h2>
-
-          <p>
-            This is the {activeTab} section.
-          </p>
-
-          {/* FILE UPLOAD */}
-          <div className="uploadBox">
-
-            <label className="uploadBtn">
-
-              Add File
-
-              <input
-                type="file"
-                hidden
-                onChange={(e) =>
-                  addFile(
-                    activeTab,
-                    e.target.files[0]
-                  )
-                }
-              />
-
-            </label>
-
-          </div>
-
-          {/* FILES */}
-          {(files[activeTab] || []).length === 0 ? (
-
-            <p className="emptyText">
-              No files uploaded yet.
-            </p>
-
-          ) : (
-
-            (files[activeTab] || []).map(
-              (file, index) => (
-
-                <div
-                  key={index}
-                  className="fileItem"
-                >
-
-                  <a
-                    href={file.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    📄 {file.name}
-                  </a>
-
-                </div>
-
-              )
-            )
-
-          )}
-
-        </div>
-
-      </main>
-
-      {/* FOOTER */}
-      <footer className="footer">
-        © 2026 Lenzie Bowling Club
-      </footer>
-
+            {activeTab === "Documents" && (
+              <DocumentForm />
+            )}
+          </main>
+        </>
+      )}
     </div>
   );
 }
 
+function SectionForm({ section }) {
+  return (
+    <div className="form-box">
+      <input placeholder={`${section} title`} />
+      <input type="date" />
+      <input type="time" />
+      <input placeholder="Place / venue" />
+      <textarea placeholder="Notes / details"></textarea>
+      <input type="file" />
+      <button>Add {section}</button>
+    </div>
+  );
+}
+
+function ContactForm({ section }) {
+  return (
+    <div className="form-box">
+      <input placeholder={`${section} name`} />
+      <input placeholder="Phone number" />
+      <input placeholder="WhatsApp number" />
+      <input placeholder="Email address" />
+      <textarea placeholder="Notes / role / details"></textarea>
+      <button>Add {section}</button>
+    </div>
+  );
+}
+
+function DocumentForm() {
+  return (
+    <div className="form-box">
+      <input placeholder="Document title" />
+      <input placeholder="Category" />
+      <input type="file" />
+      <button>Add Document</button>
+    </div>
+  );
+}
