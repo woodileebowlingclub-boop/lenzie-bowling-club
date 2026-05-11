@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import logo from "./assets/logo.png.jpg";
+import logo from "./assets/logo.jpg";
 
 const DEFAULT_ADMIN_PIN = "1234";
 const DEFAULT_MEMBER_PIN = "2026";
