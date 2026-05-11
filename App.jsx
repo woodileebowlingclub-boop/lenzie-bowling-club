@@ -3,7 +3,7 @@ import logo from "./assets/lenzie_logo_small.png";
 import { useState } from "react";
 
 export default function App() {
-  const ADMIN_PIN = "1234";
+  const ADMIN_PIN = "1873";
   const MEMBER_PIN = "2026";
 
   const [pin, setPin] = useState("");
@@ -11,27 +11,31 @@ export default function App() {
   const [adminMode, setAdminMode] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
 
-  const [diaryText, setDiaryText] = useState("");
-  const [noticeText, setNoticeText] = useState("");
-
-  const [memberName, setMemberName] = useState("");
-  const [memberPhone, setMemberPhone] = useState("");
-  const [memberWhatsapp, setMemberWhatsapp] = useState("");
-  const [memberEmail, setMemberEmail] = useState("");
   const [members, setMembers] = useState([]);
-
-  const [officeName, setOfficeName] = useState("");
-  const [officeRole, setOfficeRole] = useState("");
-  const [officePhone, setOfficePhone] = useState("");
-  const [officeWhatsapp, setOfficeWhatsapp] = useState("");
-  const [officeEmail, setOfficeEmail] = useState("");
   const [officeBearers, setOfficeBearers] = useState([]);
-
-  const [coachName, setCoachName] = useState("");
-  const [coachPhone, setCoachPhone] = useState("");
-  const [coachWhatsapp, setCoachWhatsapp] = useState("");
-  const [coachEmail, setCoachEmail] = useState("");
   const [coaches, setCoaches] = useState([]);
+
+  const [memberForm, setMemberForm] = useState({
+    name: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+  });
+
+  const [officeForm, setOfficeForm] = useState({
+    name: "",
+    role: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+  });
+
+  const [coachForm, setCoachForm] = useState({
+    name: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+  });
 
   function login() {
     if (pin === ADMIN_PIN) {
@@ -52,59 +56,43 @@ export default function App() {
   }
 
   function addMember() {
-    if (!memberName) return;
+    if (!memberForm.name) return;
 
-    const newMember = {
-      name: memberName,
-      phone: memberPhone,
-      whatsapp: memberWhatsapp,
-      email: memberEmail,
-    };
+    setMembers([...members, memberForm]);
 
-    setMembers([...members, newMember]);
-
-    setMemberName("");
-    setMemberPhone("");
-    setMemberWhatsapp("");
-    setMemberEmail("");
+    setMemberForm({
+      name: "",
+      phone: "",
+      whatsapp: "",
+      email: "",
+    });
   }
 
   function addOfficeBearer() {
-    if (!officeName) return;
+    if (!officeForm.name) return;
 
-    const newOfficeBearer = {
-      name: officeName,
-      role: officeRole,
-      phone: officePhone,
-      whatsapp: officeWhatsapp,
-      email: officeEmail,
-    };
+    setOfficeBearers([...officeBearers, officeForm]);
 
-    setOfficeBearers([...officeBearers, newOfficeBearer]);
-
-    setOfficeName("");
-    setOfficeRole("");
-    setOfficePhone("");
-    setOfficeWhatsapp("");
-    setOfficeEmail("");
+    setOfficeForm({
+      name: "",
+      role: "",
+      phone: "",
+      whatsapp: "",
+      email: "",
+    });
   }
 
   function addCoach() {
-    if (!coachName) return;
+    if (!coachForm.name) return;
 
-    const newCoach = {
-      name: coachName,
-      phone: coachPhone,
-      whatsapp: coachWhatsapp,
-      email: coachEmail,
-    };
+    setCoaches([...coaches, coachForm]);
 
-    setCoaches([...coaches, newCoach]);
-
-    setCoachName("");
-    setCoachPhone("");
-    setCoachWhatsapp("");
-    setCoachEmail("");
+    setCoachForm({
+      name: "",
+      phone: "",
+      whatsapp: "",
+      email: "",
+    });
   }
 
   if (!loggedIn) {
@@ -132,25 +120,41 @@ export default function App() {
 
   return (
     <div className="app">
+
+      {/* HEADER */}
+
       <div className="header">
         <div className="headerLeft">
-          <img src={logo} alt="Logo" className="headerLogo" />
+
+          <img
+            src={logo}
+            alt="Logo"
+            className="headerLogo"
+          />
 
           <div>
             <h1>Lenzie Bowling Club</h1>
 
             <p>
-              {adminMode ? "Administrator Mode" : "Members Area"}
+              {adminMode
+                ? "Administrator Mode"
+                : "Members Area"}
             </p>
           </div>
         </div>
 
-        <button className="logoutBtn" onClick={logout}>
+        <button
+          className="logoutBtn"
+          onClick={logout}
+        >
           Log Out
         </button>
       </div>
 
+      {/* NAVIGATION */}
+
       <div className="navBar">
+
         {[
           "Home",
           "Diary",
@@ -171,60 +175,29 @@ export default function App() {
             {tab}
           </button>
         ))}
+
       </div>
 
+      {/* MAIN */}
+
       <div className="mainContent">
+
         <div className="card">
+
+          {/* HOME */}
 
           {activeTab === "Home" && (
             <>
               <h2>Welcome</h2>
 
               <p>
-                Welcome to the Lenzie Bowling Club Members App.
+                Welcome to the Lenzie Bowling Club
+                Members App.
               </p>
             </>
           )}
 
-          {activeTab === "Diary" && (
-            <>
-              <h2>Diary</h2>
-
-              {adminMode && (
-                <div className="adminForm">
-                  <textarea
-                    placeholder="Add diary event..."
-                    value={diaryText}
-                    onChange={(e) => setDiaryText(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <div className="itemBox">
-                <p>{diaryText || "No diary events added."}</p>
-              </div>
-            </>
-          )}
-
-          {activeTab === "Notices" && (
-            <>
-              <h2>Notices</h2>
-
-              {adminMode && (
-                <div className="adminForm">
-                  <textarea
-                    placeholder="Add notice..."
-                    value={noticeText}
-                    onChange={(e) => setNoticeText(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <div className="itemBox">
-                <p>{noticeText || "No notices added."}</p>
-              </div>
-            </>
-          )}
+          {/* MEMBERS */}
 
           {activeTab === "Members" && (
             <>
@@ -232,59 +205,104 @@ export default function App() {
 
               {adminMode && (
                 <div className="adminForm">
+
                   <h3>Add Member</h3>
 
                   <input
-                    placeholder="Member name"
-                    value={memberName}
+                    placeholder="Name"
+                    value={memberForm.name}
                     onChange={(e) =>
-                      setMemberName(e.target.value)
+                      setMemberForm({
+                        ...memberForm,
+                        name: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Phone number"
-                    value={memberPhone}
+                    placeholder="Phone Number"
+                    value={memberForm.phone}
                     onChange={(e) =>
-                      setMemberPhone(e.target.value)
+                      setMemberForm({
+                        ...memberForm,
+                        phone: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="WhatsApp number"
-                    value={memberWhatsapp}
+                    placeholder="WhatsApp Number"
+                    value={memberForm.whatsapp}
                     onChange={(e) =>
-                      setMemberWhatsapp(e.target.value)
+                      setMemberForm({
+                        ...memberForm,
+                        whatsapp: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Email address"
-                    value={memberEmail}
+                    placeholder="Email Address"
+                    value={memberForm.email}
                     onChange={(e) =>
-                      setMemberEmail(e.target.value)
+                      setMemberForm({
+                        ...memberForm,
+                        email: e.target.value,
+                      })
                     }
                   />
 
                   <button onClick={addMember}>
                     Add Member
                   </button>
+
                 </div>
               )}
 
               {members.map((member, index) => (
                 <div className="itemBox" key={index}>
+
                   <h3>{member.name}</h3>
 
-                  <p>Phone: {member.phone}</p>
+                  <p>📞 {member.phone}</p>
 
-                  <p>WhatsApp: {member.whatsapp}</p>
+                  <p>💬 {member.whatsapp}</p>
 
-                  <p>Email: {member.email}</p>
+                  <p>✉️ {member.email}</p>
+
+                  <div className="contactButtons">
+
+                    <a
+                      href={`tel:${member.phone}`}
+                      className="contactBtn"
+                    >
+                      Call
+                    </a>
+
+                    <a
+                      href={`https://wa.me/${member.whatsapp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="contactBtn"
+                    >
+                      WhatsApp
+                    </a>
+
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="contactBtn"
+                    >
+                      Email
+                    </a>
+
+                  </div>
+
                 </div>
               ))}
             </>
           )}
+
+          {/* OFFICE BEARERS */}
 
           {activeTab === "Office Bearers" && (
             <>
@@ -292,69 +310,117 @@ export default function App() {
 
               {adminMode && (
                 <div className="adminForm">
+
                   <h3>Add Office Bearer</h3>
 
                   <input
                     placeholder="Name"
-                    value={officeName}
+                    value={officeForm.name}
                     onChange={(e) =>
-                      setOfficeName(e.target.value)
+                      setOfficeForm({
+                        ...officeForm,
+                        name: e.target.value,
+                      })
                     }
                   />
 
                   <input
                     placeholder="Role"
-                    value={officeRole}
+                    value={officeForm.role}
                     onChange={(e) =>
-                      setOfficeRole(e.target.value)
+                      setOfficeForm({
+                        ...officeForm,
+                        role: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Phone number"
-                    value={officePhone}
+                    placeholder="Phone Number"
+                    value={officeForm.phone}
                     onChange={(e) =>
-                      setOfficePhone(e.target.value)
+                      setOfficeForm({
+                        ...officeForm,
+                        phone: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="WhatsApp number"
-                    value={officeWhatsapp}
+                    placeholder="WhatsApp Number"
+                    value={officeForm.whatsapp}
                     onChange={(e) =>
-                      setOfficeWhatsapp(e.target.value)
+                      setOfficeForm({
+                        ...officeForm,
+                        whatsapp: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Email address"
-                    value={officeEmail}
+                    placeholder="Email Address"
+                    value={officeForm.email}
                     onChange={(e) =>
-                      setOfficeEmail(e.target.value)
+                      setOfficeForm({
+                        ...officeForm,
+                        email: e.target.value,
+                      })
                     }
                   />
 
                   <button onClick={addOfficeBearer}>
                     Add Office Bearer
                   </button>
+
                 </div>
               )}
 
               {officeBearers.map((person, index) => (
                 <div className="itemBox" key={index}>
+
                   <h3>{person.name}</h3>
 
                   <p>{person.role}</p>
 
-                  <p>Phone: {person.phone}</p>
+                  <p>📞 {person.phone}</p>
 
-                  <p>WhatsApp: {person.whatsapp}</p>
+                  <p>💬 {person.whatsapp}</p>
 
-                  <p>Email: {person.email}</p>
+                  <p>✉️ {person.email}</p>
+
+                  <div className="contactButtons">
+
+                    <a
+                      href={`tel:${person.phone}`}
+                      className="contactBtn"
+                    >
+                      Call
+                    </a>
+
+                    <a
+                      href={`https://wa.me/${person.whatsapp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="contactBtn"
+                    >
+                      WhatsApp
+                    </a>
+
+                    <a
+                      href={`mailto:${person.email}`}
+                      className="contactBtn"
+                    >
+                      Email
+                    </a>
+
+                  </div>
+
                 </div>
               ))}
             </>
           )}
+
+          {/* CLUB COACHES */}
 
           {activeTab === "Club Coaches" && (
             <>
@@ -362,81 +428,123 @@ export default function App() {
 
               {adminMode && (
                 <div className="adminForm">
+
                   <h3>Add Coach</h3>
 
                   <input
-                    placeholder="Coach name"
-                    value={coachName}
+                    placeholder="Name"
+                    value={coachForm.name}
                     onChange={(e) =>
-                      setCoachName(e.target.value)
+                      setCoachForm({
+                        ...coachForm,
+                        name: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Phone number"
-                    value={coachPhone}
+                    placeholder="Phone Number"
+                    value={coachForm.phone}
                     onChange={(e) =>
-                      setCoachPhone(e.target.value)
+                      setCoachForm({
+                        ...coachForm,
+                        phone: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="WhatsApp number"
-                    value={coachWhatsapp}
+                    placeholder="WhatsApp Number"
+                    value={coachForm.whatsapp}
                     onChange={(e) =>
-                      setCoachWhatsapp(e.target.value)
+                      setCoachForm({
+                        ...coachForm,
+                        whatsapp: e.target.value,
+                      })
                     }
                   />
 
                   <input
-                    placeholder="Email address"
-                    value={coachEmail}
+                    placeholder="Email Address"
+                    value={coachForm.email}
                     onChange={(e) =>
-                      setCoachEmail(e.target.value)
+                      setCoachForm({
+                        ...coachForm,
+                        email: e.target.value,
+                      })
                     }
                   />
 
                   <button onClick={addCoach}>
                     Add Coach
                   </button>
+
                 </div>
               )}
 
               {coaches.map((coach, index) => (
                 <div className="itemBox" key={index}>
+
                   <h3>{coach.name}</h3>
 
-                  <p>Phone: {coach.phone}</p>
+                  <p>📞 {coach.phone}</p>
 
-                  <p>WhatsApp: {coach.whatsapp}</p>
+                  <p>💬 {coach.whatsapp}</p>
 
-                  <p>Email: {coach.email}</p>
+                  <p>✉️ {coach.email}</p>
+
+                  <div className="contactButtons">
+
+                    <a
+                      href={`tel:${coach.phone}`}
+                      className="contactBtn"
+                    >
+                      Call
+                    </a>
+
+                    <a
+                      href={`https://wa.me/${coach.whatsapp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="contactBtn"
+                    >
+                      WhatsApp
+                    </a>
+
+                    <a
+                      href={`mailto:${coach.email}`}
+                      className="contactBtn"
+                    >
+                      Email
+                    </a>
+
+                  </div>
+
                 </div>
               ))}
             </>
           )}
 
-          {activeTab === "Competitions" && (
+          {/* OTHER SECTIONS */}
+
+          {[
+            "Diary",
+            "Notices",
+            "Competitions",
+            "Documents",
+          ].includes(activeTab) && (
             <>
-              <h2>Competitions</h2>
+              <h2>{activeTab}</h2>
 
               <div className="itemBox">
                 <p>
-                  Competition information will appear here.
+                  {activeTab} information will appear
+                  here.
                 </p>
               </div>
             </>
           )}
 
-          {activeTab === "Documents" && (
-            <>
-              <h2>Documents</h2>
-
-              <div className="itemBox">
-                <p>Club documents will appear here.</p>
-              </div>
-            </>
-          )}
         </div>
       </div>
     </div>
